@@ -132,8 +132,8 @@ jobs:
           # --- Build wheel
                   
           $BUILDTAG = "+cu$cudaVersionPytorch-torch${{ matrix.torch }}"
-          $env:TORCH_CUDA_ARCH_LIST = '${{ matrix.cudaarch }}'
-          python -m build -n --wheel -C--build-option=egg_info "-C--build-option=--tag-build=$BUILDTAG"
+          $env:TORCH_CUDA_ARCH_LIST = '8.9'
+          EXLLAMA_NOCOMPILE=0 python -m build -n --wheel -C--build-option=egg_info "-C--build-option=--tag-build=$BUILDTAG"
 
       # Build sdist
       - name: Build sdist
@@ -152,8 +152,7 @@ jobs:
           python -m pip install build wheel ninja
 
           # --- Build wheel
-          $env:EXLLAMA_NOCOMPILE=0
-          python -m build -n
+          EXLLAMA_NOCOMPILE=0 python -m build -n
 
       # Upload files
       - uses: actions/upload-artifact@v3
