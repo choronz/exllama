@@ -14,17 +14,17 @@ permissions:
 
 jobs:
   build_wheels:
-    name: ${{ matrix.os }} Python=${{ matrix.pyver }} CUDA=${{ matrix.cuda }} ROCm=${{ matrix.rocm }} Torch=${{ matrix.torch }}
+    name: ${{ matrix.os }} Python=${{ matrix.pyver }} CUDA=${{ matrix.cuda }} Torch=${{ matrix.torch }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
         # Ubuntu 22.04 CUDA
-        - { artname: 'wheel', os: ubuntu-22.04, pyver: '3.11', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
+        #- { artname: 'wheel', os: ubuntu-22.04, pyver: '3.11', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
         - { artname: 'wheel', os: ubuntu-22.04, pyver: '3.12', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
 
         # Windows 2022 CUDA
-        - { artname: 'wheel', os: windows-2022, pyver: '3.11', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
+        #- { artname: 'wheel', os: windows-2022, pyver: '3.11', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
         - { artname: 'wheel', os: windows-2022, pyver: '3.12', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
 
         # Extra Torch 2.2 wheels for Windows 2022 until PyTorch resolves the shm.dll issue
@@ -80,7 +80,7 @@ jobs:
             Write-Output '::error file=build-wheels-release.yml,line=203::Could not parse version from exllamav2/version.py! You must upload wheels manually!'
             Write-Output "PACKAGE_VERSION=None" >> "$env:GITHUB_OUTPUT"
           }
-          
+
       # Pin VS build tools to 17.9 so builds won't fail
       - name: Install VS2022 BuildTools 17.9.7
         run: choco install -y visualstudio2022buildtools --version=117.9.7.0 --params "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --installChannelUri https://aka.ms/vs/17/release/180911598_-255012421/channel"
@@ -124,47 +124,21 @@ jobs:
           if ($IsLinux) {$env:LD_LIBRARY_PATH = $env:CONDA_PREFIX + '/lib:' + $env:LD_LIBRARY_PATH}
           
           # --- Install dependencies
-          
           python -m ensurepip --upgrade
           python -m pip install torch==${{ matrix.torch }} --index-url https://download.pytorch.org/whl/cu$cudaVersionPytorch
           python -m pip install --upgrade setuptools==69.5.1 build wheel safetensors sentencepiece ninja
 
           # --- Build wheel
-                  
           $BUILDTAG = "+cu$cudaVersionPytorch-torch${{ matrix.torch }}"
-          $env:TORCH_CUDA_ARCH_LIST = '8.9'
-          EXLLAMA_NOCOMPILE=0 python -m build -n --wheel -C--build-option=egg_info "-C--build-option=--tag-build=$BUILDTAG"
-
-      # Build sdist
-      - name: Build sdist
-        if: matrix.cuda == '' && matrix.rocm == ''
-        run: |
-          # --- Spawn the VS shell
-          if ($IsWindows) {
-            Import-Module 'C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\Microsoft.VisualStudio.DevShell.dll'
-            Enter-VsDevShell -VsInstallPath 'C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools' -DevCmdArguments '-arch=x64 -host_arch=x64'
-            $env:DISTUTILS_USE_SDK=1
-          }
-
-          # --- Install dependencies
-          
-          python -m pip install torch==${{ matrix.torch }} --index-url https://download.pytorch.org/whl/cpu
-          python -m pip install build wheel ninja
-
-          # --- Build wheel
-          EXLLAMA_NOCOMPILE=0 python -m build -n
+          $env:TORCH_CUDA_ARCH_LIST='8.9'
+          $env:EXLLAMA_NOCOMPILE=0
+          python -m build -n --wheel -C--build-option=egg_info "-C--build-option=--tag-build=$BUILDTAG"
 
       # Upload files
       - uses: actions/upload-artifact@v3
         if: matrix.artname == 'wheel'
         with:
           name: 'wheel'
-          path: ./dist/*
-
-      - uses: actions/upload-artifact@v3
-        if: matrix.artname == 'sdist'
-        with:
-          name: 'sdist'
           path: ./dist/*
 
       - name: Upload files to GitHub release
