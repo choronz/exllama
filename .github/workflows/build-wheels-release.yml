@@ -81,10 +81,10 @@ jobs:
             Write-Output "PACKAGE_VERSION=None" >> "$env:GITHUB_OUTPUT"
           }
           
-      # Pin VS build tools to 17.11 so builds won't fail
+      # Pin VS build tools to 17.9 so builds won't fail
       - name: Install VS2022 BuildTools 17.11.3
-        run: choco install -y visualstudio2022buildtools
-        #run: choco install -y visualstudio2022buildtools --version=117.9.7.0 --params "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --installChannelUri https://aka.ms/vs/17/release/180911598_-255012421/channel"
+        # run: choco install -y visualstudio2022buildtools
+        run: choco install -y visualstudio2022buildtools --version=117.9.7.0 --params "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --installChannelUri https://aka.ms/vs/17/release/180911598_-255012421/channel"
         if: runner.os == 'Windows'
 
       # Build for CUDA
