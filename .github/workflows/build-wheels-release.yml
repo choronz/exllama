@@ -131,7 +131,6 @@ jobs:
 
           # --- Build wheel
           $BUILDTAG = "+cu$cudaVersionPytorch-torch${{ matrix.torch }}"
-          $env:EXLLAMA_NOCOMPILE=
           $env:TORCH_CUDA_ARCH_LIST = '${{ matrix.cudaarch }}'
           python -m build -n --wheel -C--build-option=egg_info "-C--build-option=--tag-build=$BUILDTAG"
 
