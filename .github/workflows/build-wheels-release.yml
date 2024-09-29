@@ -19,20 +19,19 @@ jobs:
     strategy:
       matrix:
         include:
-
         # Ubuntu 22.04 CUDA
-        # - { artname: 'wheel', os: ubuntu-22.04, pyver: '3.11', cuda: '12.1.0', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
-        # - { artname: 'wheel', os: ubuntu-22.04, pyver: '3.12', cuda: '12.1.0', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
+        - { artname: 'wheel', os: ubuntu-22.04, pyver: '3.11', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
+        - { artname: 'wheel', os: ubuntu-22.04, pyver: '3.12', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
 
         # Windows 2022 CUDA
-         - { artname: 'wheel', os: windows-2022, pyver: '3.11', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
-         - { artname: 'wheel', os: windows-2022, pyver: '3.12', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
+        - { artname: 'wheel', os: windows-2022, pyver: '3.11', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
+        - { artname: 'wheel', os: windows-2022, pyver: '3.12', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
 
-         # Extra Torch 2.2 wheels for Windows 2022 until PyTorch resolves the shm.dll issue
-         #- { artname: 'wheel', os: windows-2022, pyver: '3.11', cuda: '12.1.0', rocm:    '', torch: '2.2.0', cudaarch: '8.9' }
-         #- { artname: 'wheel', os: windows-2022, pyver: '3.12', cuda: '12.1.0', rocm:    '', torch: '2.2.0', cudaarch: '8.9' }
-         # Extra wheel for HF spaces
-         #- { artname: 'wheel', os: ubuntu-22.04, pyver: '3.10', cuda: '12.1.0', rocm:    '', torch: '2.2.2', cudaarch: '8.9' }
+        # Extra Torch 2.2 wheels for Windows 2022 until PyTorch resolves the shm.dll issue
+        #- { artname: 'wheel', os: windows-2022, pyver: '3.11', cuda: '12.1.0', rocm:    '', torch: '2.2.0', cudaarch: '8.9' }
+        #- { artname: 'wheel', os: windows-2022, pyver: '3.12', cuda: '12.1.0', rocm:    '', torch: '2.2.0', cudaarch: '8.9' }
+        # Extra wheel for HF spaces
+        #- { artname: 'wheel', os: ubuntu-22.04, pyver: '3.10', cuda: '12.1.0', rocm:    '', torch: '2.2.2', cudaarch: '8.9' }
 
     defaults:
       run:
@@ -55,7 +54,7 @@ jobs:
       - name: Delete
         uses: dev-drprasad/delete-tag-and-release@v1.1
         with:
-          tag_name: main
+          tag_name: v0.2.3
           delete_release: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
           repo: choronz/exllama
