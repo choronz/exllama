@@ -152,7 +152,7 @@ jobs:
           python -m pip install build wheel ninja
 
           # --- Build wheel
-          $env:EXLLAMA_NOCOMPILE=1
+          $env:EXLLAMA_NOCOMPILE=0
           python -m build -n
 
       # Upload files
