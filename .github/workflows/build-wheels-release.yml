@@ -20,11 +20,11 @@ jobs:
       matrix:
         include:
         # Ubuntu 22.04 CUDA
-        #- { artname: 'wheel', os: ubuntu-22.04, pyver: '3.11', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
+        - { artname: 'wheel', os: ubuntu-22.04, pyver: '3.11', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
         - { artname: 'wheel', os: ubuntu-22.04, pyver: '3.12', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
 
         # Windows 2022 CUDA
-        #- { artname: 'wheel', os: windows-2022, pyver: '3.11', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
+        - { artname: 'wheel', os: windows-2022, pyver: '3.11', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
         - { artname: 'wheel', os: windows-2022, pyver: '3.12', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
 
         # Extra Torch 2.2 wheels for Windows 2022 until PyTorch resolves the shm.dll issue
@@ -130,8 +130,8 @@ jobs:
 
           # --- Build wheel
           $BUILDTAG = "+cu$cudaVersionPytorch-torch${{ matrix.torch }}"
-          $env:TORCH_CUDA_ARCH_LIST='8.9'
-          $env:EXLLAMA_NOCOMPILE=0
+          $env:TORCH_CUDA_ARCH_LIST = '8.9+PTX'
+          $env:EXLLAMA_NOCOMPILE = 0
           python -m build -n --wheel -C--build-option=egg_info "-C--build-option=--tag-build=$BUILDTAG"
 
       # Upload files
