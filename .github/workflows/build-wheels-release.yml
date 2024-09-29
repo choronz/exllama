@@ -20,11 +20,11 @@ jobs:
       matrix:
         include:
         # Ubuntu 22.04 CUDA
-        #- { artname: 'wheel', os: ubuntu-22.04, pyver: '3.11', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
+        - { artname: 'wheel', os: ubuntu-22.04, pyver: '3.11', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
         - { artname: 'wheel', os: ubuntu-22.04, pyver: '3.12', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
 
         # Windows 2022 CUDA
-        #- { artname: 'wheel', os: windows-2022, pyver: '3.11', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
+        - { artname: 'wheel', os: windows-2022, pyver: '3.11', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
         - { artname: 'wheel', os: windows-2022, pyver: '3.12', cuda: '12.4.1', rocm:    '', torch: '2.4.0', cudaarch: '8.9' }
 
         # Extra Torch 2.2 wheels for Windows 2022 until PyTorch resolves the shm.dll issue
@@ -130,41 +130,15 @@ jobs:
 
           # --- Build wheel
           $BUILDTAG = "+cu$cudaVersionPytorch-torch${{ matrix.torch }}"
-          $env:EXLLAMA_NOCOMPILE=0
+          $env:EXLLAMA_NOCOMPILE=
           $env:TORCH_CUDA_ARCH_LIST = '${{ matrix.cudaarch }}'
           python -m build -n --wheel -C--build-option=egg_info "-C--build-option=--tag-build=$BUILDTAG"
-
-      # Build sdist
-
-      - name: Build sdist
-        if: matrix.cuda == '' && matrix.rocm == ''
-        run: |
-          # --- Spawn the VS shell
-          if ($IsWindows) {
-            Import-Module 'C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\Microsoft.VisualStudio.DevShell.dll'
-            Enter-VsDevShell -VsInstallPath 'C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools' -DevCmdArguments '-arch=x64 -host_arch=x64'
-            $env:DISTUTILS_USE_SDK=1
-          }
-
-          # --- Install dependencies
-          python -m pip install torch==${{ matrix.torch }} --index-url https://download.pytorch.org/whl/cpu
-          python -m pip install build wheel ninja
-
-          # --- Build wheel
-          $env:EXLLAMA_NOCOMPILE=0
-          python -m build -n
 
       # Upload files
       - uses: actions/upload-artifact@v3
         if: matrix.artname == 'wheel'
         with:
           name: 'wheel'
-          path: ./dist/*
-
-      - uses: actions/upload-artifact@v3
-        if: matrix.artname == 'sdist'
-        with:
-          name: 'sdist'
           path: ./dist/*
 
       - name: Upload files to GitHub release
